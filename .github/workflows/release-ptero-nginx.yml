@@ -19,7 +19,7 @@ jobs:
       - uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: TinyBrickBoy
           password: ${{ secrets.PUSH_TOKEN }}
       - uses: docker/build-push-action@v2
         with:
