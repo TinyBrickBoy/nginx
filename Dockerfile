@@ -1,6 +1,5 @@
 FROM alpine:latest
 
-RUN apk --update --no-cache add curl ca-certificates nginx
 # Install Nginx and PHP 8.3 with essential extensions for Pterodactyl
 RUN apk --update --no-cache add \
     curl \
@@ -40,14 +39,19 @@ RUN apk --update --no-cache add \
     php83-mbstring \
     php83-tokenizer \
     php83-simplexml
-COPY --from=composer:latest  /usr/bin/composer /usr/bin/composer
 
+# Composer von dem offiziellen Image kopieren
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Setup für Benutzer
 USER container
-ENV  USER container
+ENV USER container
 ENV HOME /home/container
 
 WORKDIR /home/container
-COPY ./entrypoint.sh /entrypoint.sh
 
+# Kopiere die entrypoint.sh Datei
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 CMD ["/bin/ash", "/entrypoint.sh"]
