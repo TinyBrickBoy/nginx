@@ -38,20 +38,24 @@ RUN apk --update --no-cache add \
     php83-fileinfo \
     php83-mbstring \
     php83-tokenizer \
-    php83-simplexml
+    php83-simplexml \
+    php83-sodium
 
 # Composer von dem offiziellen Image kopieren
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Setup für Benutzer
-USER container
-ENV USER container
-ENV HOME /home/container
-
-WORKDIR /home/container
-
 # Kopiere die entrypoint.sh Datei
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Erstelle den Benutzer 'container'
+RUN adduser -D -h /home/container container
+
+# Wechsle zum Benutzer 'container'
+USER container
+ENV USER=container
+ENV HOME=/home/container
+
+WORKDIR /home/container
 
 CMD ["/bin/ash", "/entrypoint.sh"]
