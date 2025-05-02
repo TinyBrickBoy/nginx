@@ -1,5 +1,6 @@
-FROM alpine:3.19
+FROM alpine:latest
 
+RUN apk --update --no-cache add curl ca-certificates nginx
 # Install Nginx and PHP 8.3 with essential extensions for Pterodactyl
 RUN apk --update --no-cache add \
     curl \
@@ -39,28 +40,14 @@ RUN apk --update --no-cache add \
     php83-mbstring \
     php83-tokenizer \
     php83-simplexml
+COPY --from=composer:latest  /usr/bin/composer /usr/bin/composer
 
-# Copy Composer from official image
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+USER container
+ENV  USER container
+ENV HOME /home/container
 
-# Copy entrypoint script
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Create non-root user for security
-RUN adduser -D -h /home/container container
-
-# Configure directory permissions
-RUN mkdir -p /home/container/public \
-    && chown -R container:container /home/container \
-    && chmod -R 755 /home/container
-
-# Set environment variables
-ENV USER=container
-ENV HOME=/home/container
-
-# Set working directory
 WORKDIR /home/container
+COPY ./entrypoint.sh /entrypoint.sh
 
-# Set entrypoint
-ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
+
+CMD ["/bin/ash", "/entrypoint.sh"]
