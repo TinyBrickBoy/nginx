@@ -1,13 +1,10 @@
 FROM alpine:3.19
 
-# Add PHP repository and install packages
+# Install Nginx and PHP 8.2
 RUN apk --update --no-cache add \
     curl \
     ca-certificates \
-    nginx
-
-# Install PHP 8.2 (more stable on Alpine currently)
-RUN apk --no-cache add \
+    nginx \
     php82 \
     php82-fpm \
     php82-xml \
@@ -45,6 +42,13 @@ RUN apk --no-cache add \
 # Copy Composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy entrypoint script
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Create container user
+RUN adduser -D -h /home/container container
+
 # Configure environment
 USER container
 ENV USER container
@@ -52,10 +56,6 @@ ENV HOME /home/container
 
 # Set working directory
 WORKDIR /home/container
-
-# Copy entrypoint script
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 # Set entrypoint
 CMD ["/bin/sh", "/entrypoint.sh"]
