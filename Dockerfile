@@ -43,9 +43,6 @@ RUN apk --update --no-cache add \
 # Copy Composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Create necessary directories
-RUN mkdir -p /run/nginx /var/lib/nginx /etc/nginx/conf.d
-
 # Copy entrypoint script
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
@@ -64,9 +61,6 @@ ENV HOME=/home/container
 
 # Set working directory
 WORKDIR /home/container
-
-# Expose ports
-EXPOSE 80 443
 
 # Set entrypoint
 ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
