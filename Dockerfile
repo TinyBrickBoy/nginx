@@ -39,7 +39,8 @@ RUN apk --update --no-cache add \
     php83-mbstring \
     php83-tokenizer \
     php83-simplexml \
-    php83-sodium
+    php83-sodium \
+    php83-intl
 
 # Composer von dem offiziellen Image kopieren
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
